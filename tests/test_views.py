@@ -1,0 +1,18 @@
+import json
+import os
+from typing import Any
+from unittest.mock import mock_open, patch
+
+from src.views import home_page_json
+
+
+@patch("builtins.open", new_callable=mock_open)
+def test_home_page_json(mock_file: Any) -> None:
+    test_data = {"message": "Привет, мир!"}
+    home_page_json(test_data)
+    data_directory_ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
+    root_directory_ = os.path.join(data_directory_, 'home_page.json')
+    mock_file.assert_called_once_with(root_directory_, "w", encoding="utf-8")
+    handle = mock_file()
+    written_data = "".join(call[0][0] for call in handle.write.call_args_list)
+    assert json.loads(written_data) == test_data

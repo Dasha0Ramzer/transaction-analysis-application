@@ -1,0 +1,79 @@
+{
+    "greeting": "Добрый день",
+    "cards": [
+        {
+            "last_digits": "7197",
+            "total_spent": 6446.99,
+            "cashback": 64.47
+        },
+        {
+            "last_digits": "4556",
+            "total_spent": 1199.6,
+            "cashback": 12.0
+        }
+    ],
+    "top_transactions": [
+        {
+            "date": "10.02.2021",
+            "amount": -85000.0,
+            "category": "Переводы",
+            "description": "Николай Н."
+        },
+        {
+            "date": "08.02.2021",
+            "amount": -599.8,
+            "category": "Ж/д билеты",
+            "description": "РЖД"
+        },
+        {
+            "date": "07.02.2021",
+            "amount": -599.8,
+            "category": "Ж/д билеты",
+            "description": "РЖД"
+        },
+        {
+            "date": "07.02.2021",
+            "amount": -540.0,
+            "category": "Супермаркеты",
+            "description": "IP Gorskaya Vv"
+        },
+        {
+            "date": "02.02.2021",
+            "amount": -700.0,
+            "category": "Транспорт",
+            "description": "Метро Санкт-Петербург"
+        }
+    ],
+    "currency_rates": [
+        {
+            "currency": "USD",
+            "rate": 77.1
+        },
+        {
+            "currency": "EUR",
+            "rate": 91.4
+        }
+    ],
+    "stock_prices": [
+        {
+            "stock": "AAPL",
+            "price": 279.66
+        },
+        {
+            "stock": "AMZN",
+            "price": 205.93
+        },
+        {
+            "stock": "GOOGL",
+            "price": 313.14
+        },
+        {
+            "stock": "MSFT",
+            "price": 405.02
+        },
+        {
+            "stock": "TSLA",
+            "price": 424.46
+        }
+    ]
+}
