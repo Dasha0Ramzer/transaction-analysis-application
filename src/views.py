@@ -1,32 +1,13 @@
-"""
-Основные функции для генерации JSON-ответов
-"""
-
 import datetime
 import json
 import logging
 import os
 from typing import Any
 
-from src.utils import (
-    cards,
-    cashback,
-    exchange_rate,
-    filtering_by_date_all,
-    filtering_by_date_month,
-    filtering_by_date_weekday,
-    filtering_by_date_year,
-    greeting,
-    main_expenses,
-    main_receipts,
-    stock_price,
-    top_transactions,
-    total_amount_of_receipts,
-    total_expenses,
-    total_expenses_total,
-    transfers_and_cash,
-    xlsx_file_reader,
-)
+from src.utils import (cards, cashback, exchange_rate, filtering_by_date_all, filtering_by_date_month,
+                       filtering_by_date_weekday, filtering_by_date_year, greeting, main_expenses, main_receipts,
+                       stock_price, top_transactions, total_amount_of_receipts, total_expenses, total_expenses_total,
+                       transfers_and_cash, xlsx_file_reader)
 
 views_logger = logging.getLogger("Основные функции для генерации JSON-ответов")
 
@@ -152,3 +133,21 @@ def events_page_json(data: Any) -> None:
 # data_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
 # root_directory = os.path.join(data_directory, 'operations.xlsx')
 # events_page_json(create_json_data_events_page('2021-02-12 15:45:0'))
+
+
+def service_profitable_categories_of_increased_cashback_json(data: Any) -> None:
+    """
+    Функция, записывающая JSON-ответ в файл для сервиса "Выгодные категории повышенного кэшбэка"
+    :return:
+    """
+    views_logger.debug("Записываем JSON-ответ в файл")
+    data_directory_ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    root_directory_ = os.path.join(data_directory_, "profitable_categories_of_increased_cashback.json")
+    with open(root_directory_, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+# from src.utils import xlsx_file_reader
+# data_file = xlsx_file_reader('../data/operations.xlsx')
+# service_beneficial_categories_of_increased_cashback_json(
+#     profitable_categories_of_increased_cashback(data_file, 2021, 12))
