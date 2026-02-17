@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import os
+import re
 from typing import Any, Hashable
 
 services_logger = logging.getLogger("Основные функции для генерации JSON-ответов")
@@ -99,3 +100,52 @@ def investment_bank(month: str, transactions: list[dict[str, Any]], limit: int) 
 
     services_logger.info("Возвращаем результат функции")
     return round(investment_sawmill, 2)
+
+
+def simple_search(the_search_bar: str, data: list[dict[Hashable, Any]]) -> str:
+    """
+    Функция, возвращающая JSON-ответ со всеми транзакциями, содержащими запрос в описании или категории
+    :param the_search_bar: запрос на поиск
+    :type the_search_bar: str
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :return: список транзакций, содержащих запрос в описании или категории
+    :rtype: str
+    """
+    data_filtering = [
+        dict_
+        for dict_ in data
+        if the_search_bar.lower() in dict_["Категория"].lower() or the_search_bar.lower() in dict_["Описание"].lower()
+    ]
+    json_result = json.dumps(data_filtering, indent=4)
+    return json_result
+
+
+def search_by_phone_numbers(data: list[dict[Hashable, Any]]) -> str:
+    """
+    Функция, возвращающая JSON со всеми транзакциями, содержащими в описании мобильные номера
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :return: список транзакций
+    :rtype: str
+    """
+    pattern = re.compile(r"\+7\s\d{3}\s(\d{2}|\d{3})-(\d{2}|\d{3})-(\d{2}|\d{3})")
+    data_filtering = [dict_ for dict_ in data if pattern.search(dict_["Описание"])]
+    json_result = json.dumps(data_filtering, indent=4)
+    return json_result
+
+
+def search_for_transfers_to_individuals(data: list[dict[Hashable, Any]]) -> str:
+    """
+    Функция, возвращающая JSON со всеми транзакциями, которые относятся к переводам физлицам
+    :param data: список операций
+    :type data: list[dict[Hashable, Any]]
+    :return: список транзакций
+    :rtype: str
+    """
+    pattern = re.compile(r"\b[A-ЯЁ][a-яё]+\s[A-ЯЁ]\.")
+    data_filtering = [
+        dict_ for dict_ in data if pattern.search(dict_["Описание"]) and dict_["Категория"] == "Переводы"
+    ]
+    json_result = json.dumps(data_filtering, indent=4)
+    return json_result

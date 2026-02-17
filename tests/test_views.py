@@ -1,30 +1,37 @@
 import json
-import os
-from typing import Any
-from unittest.mock import mock_open, patch
 
-from src.views import events_page_json, home_page_json
+from src.views import create_json_data_events_page, create_json_data_home_page
 
 
-@patch("builtins.open", new_callable=mock_open)
-def test_home_page_json(mock_file: Any) -> None:
-    test_data = {"message": "Привет, мир!"}
-    home_page_json(test_data)
-    data_directory_ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
-    root_directory_ = os.path.join(data_directory_, "home_page.json")
-    mock_file.assert_called_once_with(root_directory_, "w", encoding="utf-8")
-    handle = mock_file()
-    written_data = "".join(call[0][0] for call in handle.write.call_args_list)
-    assert json.loads(written_data) == test_data
+def test_create_json_data_home_page() -> None:
+    test_datetime_str = "2023-01-01 00:00:00"
+    expected_result = {
+        "greeting": "Доброй ночи",
+        "cards": [],
+        "top_transactions": [],
+        "currency_rates": [],
+        "stock_prices": [],
+    }
+    json_result = create_json_data_home_page(test_datetime_str)
+    actual_result = json.loads(json_result)
+    assert actual_result == expected_result
 
 
-@patch("builtins.open", new_callable=mock_open)
-def test_events_page_json(mock_file: Any) -> None:
-    test_data = {"message": "Привет, мир!"}
-    events_page_json(test_data)
-    data_directory_ = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
-    root_directory_ = os.path.join(data_directory_, "events_page.json")
-    mock_file.assert_called_once_with(root_directory_, "w", encoding="utf-8")
-    handle = mock_file()
-    written_data = "".join(call[0][0] for call in handle.write.call_args_list)
-    assert json.loads(written_data) == test_data
+def test_create_json_data_events_page() -> None:
+    test_datetime_str = "2023-01-01 00:00:00"
+    expected_result = {
+        "expenses": {
+            "total_amount": 0,
+            "main": [],
+            "transfers_and_cash": [],
+        },
+        "income": {
+            "total_amount": 0,
+            "main": [],
+        },
+        "currency_rates": [],
+        "stock_prices": [],
+    }
+    json_result = create_json_data_events_page(test_datetime_str)
+    actual_result = json.loads(json_result)
+    assert actual_result == expected_result

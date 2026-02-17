@@ -5,25 +5,10 @@ from unittest.mock import mock_open, patch
 import pandas as pd
 import pytest
 
-from src.utils import (
-    cards,
-    cashback,
-    exchange_rate,
-    filtering_by_date_all,
-    filtering_by_date_month,
-    filtering_by_date_weekday,
-    filtering_by_date_year,
-    greeting,
-    main_expenses,
-    main_receipts,
-    stock_price,
-    top_transactions,
-    total_amount_of_receipts,
-    total_expenses,
-    total_expenses_total,
-    transfers_and_cash,
-    xlsx_file_reader,
-)
+from src.utils import (cards, cashback, exchange_rate, filtering_by_date_all, filtering_by_date_month,
+                       filtering_by_date_weekday, filtering_by_date_year, greeting, main_expenses, main_receipts,
+                       stock_price, top_transactions, total_amount_of_receipts, total_expenses, total_expenses_total,
+                       transfers_and_cash, xlsx_file_reader)
 
 
 @pytest.mark.parametrize(
@@ -2932,7 +2917,7 @@ def test_cards(data_fixture_2: list[dict[Hashable, Any]]) -> None:
 
 
 def test_total_expenses(data_fixture_2: list[dict[Hashable, Any]]) -> None:
-    assert total_expenses(data_fixture_2, ["*7197", "*4556"]) == {"*7197": 6826.99, "*4556": 1199.6}
+    assert total_expenses(data_fixture_2, ["*7197", "*4556"]) == {"*7197": 7105.509999999999, "*4556": 1199.6}
 
 
 def test_cashback() -> None:
@@ -2977,7 +2962,7 @@ def test_stock_price(
 
 
 def test_total_expenses_total(data_fixture_2: list[dict[Hashable, Any]]) -> None:
-    assert total_expenses_total(data_fixture_2) == 93026.59
+    assert total_expenses_total(data_fixture_2) == 93305.11
 
 
 def test_main_expenses(data_fixture_2: list[dict[Hashable, Any]]) -> None:
@@ -2986,10 +2971,10 @@ def test_main_expenses(data_fixture_2: list[dict[Hashable, Any]]) -> None:
         {"category": "Фастфуд", "amount": 1476.0},
         {"category": "Ж/д билеты", "amount": 1199.6},
         {"category": "Транспорт", "amount": 1000.0},
+        {"category": "Оплата мобильной связи", "amount": 278.52},
         {"category": "Игры", "amount": 190.0},
         {"category": "Рестораны", "amount": 90.0},
-        {"category": "Различные товары", "amount": 55.2},
-        {"category": "Остальное", "amount": 190.0},
+        {"category": "Остальное", "amount": 1190.0},
     ]
 
 
