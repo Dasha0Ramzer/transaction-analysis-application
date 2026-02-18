@@ -1,6 +1,7 @@
 import json
 from typing import Any, Hashable
 
+import pandas as pd
 import pytest
 
 
@@ -964,3 +965,20 @@ def data_fixture_1() -> list[dict[Hashable, Any]]:
             "Сумма операции с округлением": 129.0,
         },
     ]
+
+
+@pytest.fixture
+def data_fixture_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "Категория": ["еда", "транспорт", "еда", "развлечения", "еда"],
+            "Дата операции": [
+                "15.01.2023 10:00:00",
+                "10.02.2023 12:00:00",
+                "05.03.2023 14:00:00",
+                "25.01.2023 16:00:00",
+                "01.04.2023 18:00:00",
+            ],
+            "Сумма операции": [-100, 50, -75, -200, 90],
+        }
+    )

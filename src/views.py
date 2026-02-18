@@ -57,10 +57,6 @@ def create_json_data_home_page(datetime_str: str) -> str:
     return json_result
 
 
-# json_data = json.loads(create_json_data_home_page('2021-02-12 15:45:0'))
-# pprint(json_data)
-
-
 def create_json_data_events_page(datetime_str: str, period_data: str = "M") -> str:
     """
     Функция, "собирающая" все вспомогательные функции для вывода данных для веб-страницы "Главная"
@@ -103,7 +99,3 @@ def create_json_data_events_page(datetime_str: str, period_data: str = "M") -> s
 
     json_result = json.dumps(data, indent=4)
     return json_result
-
-
-# json_data = json.loads(create_json_data_events_page('2021-02-12 15:45:0'))
-# pprint(json_data)

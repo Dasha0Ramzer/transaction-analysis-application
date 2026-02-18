@@ -59,11 +59,6 @@ def profitable_categories_of_increased_cashback(data: list[dict[Hashable, Any]],
     return json_result
 
 
-# from src.utils import xlsx_file_reader
-# data_file = xlsx_file_reader('../data/operations.xlsx')
-# print(profitable_categories_of_increased_cashback(data_file, 2021, 2))
-
-
 def investment_bank(month: str, transactions: list[dict[str, Any]], limit: int) -> float:
     """
     Функция, возвращающая сумму, которую удалось бы отложить в «Инвесткопилку»
