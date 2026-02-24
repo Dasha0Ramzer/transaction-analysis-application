@@ -53,13 +53,13 @@ def profitable_categories_of_increased_cashback(data: list[dict[Hashable, Any]],
             categories_of_increased_cashback[dict_["Категория"]] += dict_["Кэшбэк"]
 
     services_logger.debug("Переводим результат в JSON-формат")
-    json_result = json.dumps(categories_of_increased_cashback, indent=4)
+    json_result = json.dumps(categories_of_increased_cashback, indent=4, ensure_ascii=False)
 
     services_logger.info("Возвращаем результат функции")
     return json_result
 
 
-def investment_bank(month: str, transactions: list[dict[str, Any]], limit: int) -> float:
+def investment_bank(month: str, transactions: list[dict[Hashable, Any]], limit: int) -> float:
     """
     Функция, возвращающая сумму, которую удалось бы отложить в «Инвесткопилку»
     :param month: месяц, для которого рассчитывается отложенная сумма в формате 'YYYY-MM'
@@ -112,7 +112,7 @@ def simple_search(the_search_bar: str, data: list[dict[Hashable, Any]]) -> str:
         for dict_ in data
         if the_search_bar.lower() in dict_["Категория"].lower() or the_search_bar.lower() in dict_["Описание"].lower()
     ]
-    json_result = json.dumps(data_filtering, indent=4)
+    json_result = json.dumps(data_filtering, indent=4, ensure_ascii=False)
     return json_result
 
 
@@ -126,7 +126,7 @@ def search_by_phone_numbers(data: list[dict[Hashable, Any]]) -> str:
     """
     pattern = re.compile(r"\+7\s\d{3}\s(\d{2}|\d{3})-(\d{2}|\d{3})-(\d{2}|\d{3})")
     data_filtering = [dict_ for dict_ in data if pattern.search(dict_["Описание"])]
-    json_result = json.dumps(data_filtering, indent=4)
+    json_result = json.dumps(data_filtering, indent=4, ensure_ascii=False)
     return json_result
 
 
@@ -142,5 +142,5 @@ def search_for_transfers_to_individuals(data: list[dict[Hashable, Any]]) -> str:
     data_filtering = [
         dict_ for dict_ in data if pattern.search(dict_["Описание"]) and dict_["Категория"] == "Переводы"
     ]
-    json_result = json.dumps(data_filtering, indent=4)
+    json_result = json.dumps(data_filtering, indent=4, ensure_ascii=False)
     return json_result

@@ -5,10 +5,25 @@ from unittest.mock import mock_open, patch
 import pandas as pd
 import pytest
 
-from src.utils import (cards, cashback, exchange_rate, filtering_by_date_all, filtering_by_date_month,
-                       filtering_by_date_weekday, filtering_by_date_year, greeting, main_expenses, main_receipts,
-                       stock_price, top_transactions, total_amount_of_receipts, total_expenses, total_expenses_total,
-                       transfers_and_cash, xlsx_file_reader)
+from src.utils import (
+    cards,
+    cashback,
+    exchange_rate,
+    filtering_by_date_all,
+    filtering_by_date_month,
+    filtering_by_date_weekday,
+    filtering_by_date_year,
+    greeting,
+    main_expenses,
+    main_receipts,
+    stock_price,
+    top_transactions,
+    total_amount_of_receipts,
+    total_expenses,
+    total_expenses_total,
+    transfers_and_cash,
+    xlsx_file_reader,
+)
 
 
 @pytest.mark.parametrize(
