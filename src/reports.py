@@ -6,7 +6,6 @@ from typing import Any, Callable, Optional, Union
 
 import pandas as pd
 
-
 reports_logger = logging.getLogger("Основные функции для генерации JSON-ответов")
 
 logs_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
@@ -61,7 +60,7 @@ def log() -> Callable[..., Any]:
 def spending_by_category(
     transactions: pd.DataFrame, category: str, date: Optional[Union[str, datetime.datetime]] = None
 ) -> pd.DataFrame:
-    '''
+    """
     Функция, возвращающая траты по заданной категории за последние три месяца (от переданной даты)
     :param transactions: датафрейм с транзакциями
     :type transactions: pd.DataFrame
@@ -71,20 +70,20 @@ def spending_by_category(
     :type date: Optional[Union[str, datetime.datetime]]
     :return: траты по заданной категории
     :rtype: pd.DataFrame
-    '''
-    reports_logger.debug('Проверяем, вводилась ли дата и является ли она строкой')
+    """
+    reports_logger.debug("Проверяем, вводилась ли дата и является ли она строкой")
     if date is None:
         date = datetime.datetime.now()
     elif isinstance(date, str):
         date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Отсчитываем 3 месяца назад')
+    reports_logger.debug("Отсчитываем 3 месяца назад")
     three_months_ago = date - datetime.timedelta(days=90)
 
     reports_logger.debug('Преобразовываем формат столбца "Дата операции" в формат datetime')
     transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Фильтруем транзакции по дате и по категории')
+    reports_logger.debug("Фильтруем транзакции по дате и по категории")
     filtering_transactions = transactions[
         (transactions["Категория"] == category)
         & (three_months_ago <= transactions["Дата операции"])
@@ -92,7 +91,7 @@ def spending_by_category(
         & (transactions["Сумма операции"] < 0)
     ]
 
-    reports_logger.info('Возвращаем результат функции')
+    reports_logger.info("Возвращаем результат функции")
     return filtering_transactions
 
 
@@ -100,7 +99,7 @@ def spending_by_category(
 def spending_by_weekday(
     transactions: pd.DataFrame, date: Optional[Union[str, datetime.datetime]] = None
 ) -> pd.DataFrame:
-    '''
+    """
     Функция, возвращающая средние траты в каждый из дней недели за последние три месяца (от переданной даты)
     :param transactions: датафрейм с транзакциями
     :type transactions: pd.DataFrame
@@ -108,20 +107,20 @@ def spending_by_weekday(
     :type date: Optional[Union[str, datetime.datetime]]
     :return: средние траты на каждый день недели
     :rtype: pd.DataFrame
-    '''
-    reports_logger.debug('Проверяем, вводилась ли дата и является ли она строкой')
+    """
+    reports_logger.debug("Проверяем, вводилась ли дата и является ли она строкой")
     if date is None:
         date = datetime.datetime.now()
     elif isinstance(date, str):
         date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Отсчитываем 3 месяца назад')
+    reports_logger.debug("Отсчитываем 3 месяца назад")
     three_months_ago = date - datetime.timedelta(days=90)
 
     reports_logger.debug('Преобразовываем формат столбца "Дата операции" в формат datetime')
     transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Фильтруем транзакции по дате')
+    reports_logger.debug("Фильтруем транзакции по дате")
     filtering_transactions = transactions[
         (three_months_ago <= transactions["Дата операции"])
         & (transactions["Дата операции"] <= date)
@@ -133,10 +132,10 @@ def spending_by_weekday(
 
     filtering_transactions["Сумма операции"] = filtering_transactions["Сумма операции"].abs()
 
-    reports_logger.debug('Вычисляем среднее значение по дню недели')
+    reports_logger.debug("Вычисляем среднее значение по дню недели")
     result = filtering_transactions.groupby("День недели")["Сумма операции"].mean().reset_index()
 
-    reports_logger.info('Возвращаем результат функции')
+    reports_logger.info("Возвращаем результат функции")
     return result
 
 
@@ -144,7 +143,7 @@ def spending_by_weekday(
 def spending_by_workday(
     transactions: pd.DataFrame, date: Optional[Union[str, datetime.datetime]] = None
 ) -> pd.DataFrame:
-    '''
+    """
     Функция, возвращающая средние траты в рабочий и в выходной день за последние три месяца (от переданной даты)
     :param transactions: датафрейм с транзакциями
     :type transactions: pd.DataFrame
@@ -152,20 +151,20 @@ def spending_by_workday(
     :type date: Optional[Union[str, datetime.datetime]]
     :return: средние траты на рабочий и выходной дни
     :rtype: pd.DataFrame
-    '''
-    reports_logger.debug('Проверяем, вводилась ли дата и является ли она строкой')
+    """
+    reports_logger.debug("Проверяем, вводилась ли дата и является ли она строкой")
     if date is None:
         date = datetime.datetime.now()
     elif isinstance(date, str):
         date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Отсчитываем 3 месяца назад')
+    reports_logger.debug("Отсчитываем 3 месяца назад")
     three_months_ago = date - datetime.timedelta(days=90)
 
     reports_logger.debug('Преобразовываем формат столбца "Дата операции" в формат datetime')
     transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
 
-    reports_logger.debug('Фильтруем транзакции по дате')
+    reports_logger.debug("Фильтруем транзакции по дате")
     filtering_transactions = transactions[
         (three_months_ago <= transactions["Дата операции"])
         & (transactions["Дата операции"] <= date)
@@ -179,8 +178,8 @@ def spending_by_workday(
 
     filtering_transactions["Сумма операции"] = filtering_transactions["Сумма операции"].abs()
 
-    reports_logger.debug('Вычисляем среднее значение по типу дня')
+    reports_logger.debug("Вычисляем среднее значение по типу дня")
     result = filtering_transactions.groupby("Тип дня")["Сумма операции"].mean().reset_index()
 
-    reports_logger.info('Возвращаем результат функции')
+    reports_logger.info("Возвращаем результат функции")
     return result

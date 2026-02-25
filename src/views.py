@@ -3,10 +3,25 @@ import json
 import logging
 import os
 
-from src.utils import (cards, cashback, exchange_rate, filtering_by_date_all, filtering_by_date_month,
-                       filtering_by_date_weekday, filtering_by_date_year, greeting, main_expenses, main_receipts,
-                       stock_price, top_transactions, total_amount_of_receipts, total_expenses, total_expenses_total,
-                       transfers_and_cash, xlsx_file_reader)
+from src.utils import (
+    cards,
+    cashback,
+    exchange_rate,
+    filtering_by_date_all,
+    filtering_by_date_month,
+    filtering_by_date_weekday,
+    filtering_by_date_year,
+    greeting,
+    main_expenses,
+    main_receipts,
+    stock_price,
+    top_transactions,
+    total_amount_of_receipts,
+    total_expenses,
+    total_expenses_total,
+    transfers_and_cash,
+    xlsx_file_reader,
+)
 
 views_logger = logging.getLogger("Основные функции для генерации JSON-ответов")
 
@@ -53,7 +68,7 @@ def create_json_data_home_page(datetime_str: str) -> str:
         "stock_prices": stock_price(),
     }
 
-    json_result = json.dumps(data, indent=4)
+    json_result = json.dumps(data, indent=4, ensure_ascii=False)
     return json_result
 
 
@@ -97,5 +112,5 @@ def create_json_data_events_page(datetime_str: str, period_data: str = "M") -> s
         "stock_prices": stock_price(),
     }
 
-    json_result = json.dumps(data, indent=4)
+    json_result = json.dumps(data, indent=4, ensure_ascii=False)
     return json_result
