@@ -13,8 +13,8 @@ load_dotenv("../.env")
 
 utils_logger = logging.getLogger("Вспомогательные функции")
 
-logs_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))
-utils_handler = logging.FileHandler(os.path.join(logs_directory, 'utils.log'), mode="w", encoding="utf-8")
+logs_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
+utils_handler = logging.FileHandler(os.path.join(logs_directory, "utils.log"), mode="w", encoding="utf-8")
 
 utils_formatter = logging.Formatter(
     "%(asctime)s - %(name)s - Имя файла: %(filename)s - Имя функции: %(funcName)s \n%(levelname)s - %(message)s"
@@ -47,10 +47,6 @@ def greeting(date_time_now: datetime.datetime) -> str:
         return "Добрый вечер"
 
 
-# print(greeting(datetime.datetime.now()))
-# print(datetime.datetime.now())
-
-
 def xlsx_file_reader(path_to_the_file: str) -> list[dict[Hashable, Any]]:
     """
     Функция, считывающая XLSX-файл и выводящая содержимое
@@ -61,7 +57,7 @@ def xlsx_file_reader(path_to_the_file: str) -> list[dict[Hashable, Any]]:
     :rtype: list[dict[Hashable, Any]]
     """
     utils_logger.debug("Считываем XLSX-файл с помощью pandas")
-    transactions = pd.read_excel(path_to_the_file, engine='openpyxl')
+    transactions = pd.read_excel(path_to_the_file, engine="openpyxl")
 
     utils_logger.debug("Форматируем данные в словарь")
     data = transactions.to_dict(orient="records")
@@ -70,10 +66,9 @@ def xlsx_file_reader(path_to_the_file: str) -> list[dict[Hashable, Any]]:
     return data
 
 
-# print(xlsx_file_reader('../data/operations.xlsx'))
-
-
-def filtering_by_date(data: list[dict[Hashable, Any]], date_time_now: datetime.datetime) -> list[dict[Hashable, Any]]:
+def filtering_by_date_month(
+    data: list[dict[Hashable, Any]], date_time_now: datetime.datetime
+) -> list[dict[Hashable, Any]]:
     """
     Функция, фильтрующая транзакции в диапазоне с начала месяца по текущий день
 
@@ -84,34 +79,100 @@ def filtering_by_date(data: list[dict[Hashable, Any]], date_time_now: datetime.d
     :return: транзакции с начала месяца
     :rtype: list[dict[Hashable, Any]]
     """
-    day_now = date_time_now.day
-    month_now = date_time_now.month
-    year_now = date_time_now.year
-    utils_logger.debug(f"Получаем день ({day_now}) месяц ({month_now}) год ({year_now}) запроса к транзакциям")
+    start_datetime = date_time_now.replace(day=1, hour=0, minute=0, second=0)
+    end_datetime = date_time_now
+    utils_logger.debug(f"Получаем начало месяца ({start_datetime}) и конечную дату ({end_datetime})")
 
-    utils_logger.debug(
-        "Формируем новый список словарей, в котором транзакции с первого числа месяца по запрашиваемую дату"
-    )
-    new_data = []
-    for dict_ in data:
-        date_of_operation = datetime.datetime.strptime(dict_["Дата операции"], "%d.%m.%Y %H:%M:%S")
-        day_operation = date_of_operation.day
-        month_operation = date_of_operation.month
-        year_operation = date_of_operation.year
-        if 1 <= day_operation <= day_now and month_operation == month_now and year_operation == year_now:
-            new_data.append(dict_)
-
-    utils_logger.debug("Сортируем новый список по дате по убыванию")
-    result_data = sorted(new_data, key=lambda dictionary: dictionary["Дата операции"], reverse=True)
+    result_data = [
+        dict_
+        for dict_ in data
+        if start_datetime <= datetime.datetime.strptime(dict_["Дата операции"], "%d.%m.%Y %H:%M:%S") <= end_datetime
+    ]
 
     utils_logger.info("Возвращаем отсортированные транзакции")
     return result_data
 
 
-# date_obj = datetime.datetime(2021, 2, 12, 15, 45, 0)
-# file_path = '../data/operations.xlsx'
-# data_first = xlsx_file_reader(file_path)
-# print(filtering_by_date(data_first, date_obj))
+def filtering_by_date_weekday(
+    data: list[dict[Hashable, Any]], date_time_now: datetime.datetime
+) -> list[dict[Hashable, Any]]:
+    """
+    Функция, фильтрующая транзакции в диапазоне с начала недели по текущий день
+
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :param date_time_now: дата и время на текущий момент
+    :type date_time_now: 'datetime.datetime'
+    :return: транзакции с начала недели
+    :rtype: list[dict[Hashable, Any]]
+    """
+    start_datetime = date_time_now - datetime.timedelta(days=date_time_now.weekday())
+    start_datetime = start_datetime.replace(hour=0, minute=0, second=0)
+    end_datetime = date_time_now
+    utils_logger.debug(f"Получаем начало недели ({start_datetime}) и конечную дату ({end_datetime})")
+
+    result_data = [
+        dict_
+        for dict_ in data
+        if start_datetime <= datetime.datetime.strptime(dict_["Дата операции"], "%d.%m.%Y %H:%M:%S") <= end_datetime
+    ]
+
+    utils_logger.info("Возвращаем отсортированные транзакции")
+    return result_data
+
+
+def filtering_by_date_year(
+    data: list[dict[Hashable, Any]], date_time_now: datetime.datetime
+) -> list[dict[Hashable, Any]]:
+    """
+    Функция, фильтрующая транзакции в диапазоне с начала года по текущий день
+
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :param date_time_now: дата и время на текущий момент
+    :type date_time_now: 'datetime.datetime'
+    :return: транзакции с начала года
+    :rtype: list[dict[Hashable, Any]]
+    """
+    start_datetime = date_time_now.replace(month=1, day=1, hour=0, minute=0, second=0)
+    end_datetime = date_time_now
+    utils_logger.debug(f"Получаем начало года ({start_datetime}) и конечную дату ({end_datetime})")
+
+    result_data = [
+        dict_
+        for dict_ in data
+        if start_datetime <= datetime.datetime.strptime(dict_["Дата операции"], "%d.%m.%Y %H:%M:%S") <= end_datetime
+    ]
+
+    utils_logger.info("Возвращаем отсортированные транзакции")
+    return result_data
+
+
+def filtering_by_date_all(
+    data: list[dict[Hashable, Any]], date_time_now: datetime.datetime
+) -> list[dict[Hashable, Any]]:
+    """
+    Функция, фильтрующая транзакции в диапазоне с самого начала по текущий день
+
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :param date_time_now: дата и время на текущий момент
+    :type date_time_now: 'datetime.datetime'
+    :return: транзакции с самого начала
+    :rtype: list[dict[Hashable, Any]]
+    """
+    start_datetime = datetime.datetime.min
+    end_datetime = date_time_now
+    utils_logger.debug(f"Получаем начальную ({start_datetime}) и конечную даты ({end_datetime})")
+
+    result_data = [
+        dict_
+        for dict_ in data
+        if start_datetime <= datetime.datetime.strptime(dict_["Дата операции"], "%d.%m.%Y %H:%M:%S") <= end_datetime
+    ]
+
+    utils_logger.info("Возвращаем отсортированные транзакции")
+    return result_data
 
 
 def cards(data: list[dict[Hashable, Any]]) -> Generator[str, None, None]:
@@ -128,14 +189,9 @@ def cards(data: list[dict[Hashable, Any]]) -> Generator[str, None, None]:
             yield dict_["Номер карты"]  # [1:]
 
 
-# file_path = '../data/operations.xlsx'
-# data_first = xlsx_file_reader(file_path)
-# print(list(set(cards(data_first))))
-
-
 def total_expenses(data: list[dict[Hashable, Any]], numbers_cards: list[str]) -> dict[str, float]:
     """
-    Функция, суммирующая расходы за месяц
+    Функция, суммирующая расходы за месяц по каждой карте
 
     :param data: список транзакций
     :type data: list[dict[Hashable, Any]]
@@ -156,12 +212,6 @@ def total_expenses(data: list[dict[Hashable, Any]], numbers_cards: list[str]) ->
     return dict(category_counter)
 
 
-# file_path = '../data/operations.xlsx'
-# data_first = xlsx_file_reader(file_path)
-# date_obj = datetime.datetime(2021, 2, 12, 15, 45, 0)
-# print(total_expenses(filtering_by_date(data_first, date_obj), list(set(cards(data_first)))))
-
-
 def cashback(expenditure: float) -> float:
     """
     Функция, рассчитывающая кэшбэк, исходя из суммы расходов
@@ -173,15 +223,6 @@ def cashback(expenditure: float) -> float:
     """
     utils_logger.info(f"Возвращаем кэшбэк: {expenditure} / 100 = {round(expenditure / 100, 2)}")
     return round(expenditure / 100, 2)
-
-
-# file_path = '../data/operations.xlsx'
-# data_first = xlsx_file_reader(file_path)
-# date_obj = datetime.datetime(2021, 2, 12, 15, 45, 0)
-# data_second = filtering_by_date(data_first, date_obj)
-# total_expenses_ = total_expenses(data_second, list(set(cards(data_first))))
-# print(total_expenses_['*7197'], cashback(total_expenses_['*7197']))
-# print(total_expenses_['*4556'], cashback(total_expenses_['*4556']))
 
 
 def top_transactions(data: list[dict[Hashable, Any]]) -> list[dict[str, Any]]:
@@ -218,13 +259,6 @@ def top_transactions(data: list[dict[Hashable, Any]]) -> list[dict[str, Any]]:
     return result
 
 
-# file_path = '../data/operations.xlsx'
-# data_first = xlsx_file_reader(file_path)
-# date_obj = datetime.datetime(2021, 2, 12, 15, 45, 0)
-# data_second = filtering_by_date(data_first, date_obj)
-# print(top_transactions(data_second))
-
-
 def exchange_rate() -> list[dict[str, Any]]:
     """
     Функция, возвращающая курс валют из файла user_settings.json
@@ -238,8 +272,8 @@ def exchange_rate() -> list[dict[str, Any]]:
     url = "https://api.apilayer.com/exchangerates_data/latest"
 
     utils_logger.debug("Открываем файл с пользовательскими данными")
-    root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    file_in_root = os.path.join(root_directory, 'user_settings.json')
+    root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    file_in_root = os.path.join(root_directory, "user_settings.json")
     with open(file_in_root) as f:
         data = json.load(f)
 
@@ -261,9 +295,6 @@ def exchange_rate() -> list[dict[str, Any]]:
     return list_result
 
 
-# print(exchange_rate())
-
-
 def stock_price() -> list[dict[str, Any]]:
     """
     Функция, возвращающая курс акций из файла user_settings.json
@@ -277,8 +308,8 @@ def stock_price() -> list[dict[str, Any]]:
     url = "https://api.api-ninjas.com/v1/stockprice"
 
     utils_logger.debug("Открываем файл с пользовательскими данными")
-    root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    file_in_root = os.path.join(root_directory, 'user_settings.json')
+    root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    file_in_root = os.path.join(root_directory, "user_settings.json")
     with open(file_in_root) as f:
         data = json.load(f)
 
@@ -300,4 +331,129 @@ def stock_price() -> list[dict[str, Any]]:
     return list_result
 
 
-# print(stock_price())
+def total_expenses_total(data: list[dict[Hashable, Any]]) -> float:
+    """
+    Функция, суммирующая расходы всего
+
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :return: сумма расходов
+    :rtype: float
+    """
+    utils_logger.debug("Перебираем операции и суммируем расходы")
+    expenses = 0
+    for dict_ in data:
+        if dict_["Сумма платежа"] < 0:
+            expenses += abs(dict_["Сумма платежа"])
+
+    utils_logger.info(f"Возвращаем сумму расходов {expenses}")
+    return round(expenses, 2)
+
+
+def main_expenses(data: list[dict[Hashable, Any]]) -> list[dict[str, float]]:
+    """
+    Функция, возвращающая сумму расходов по 7 категориям по убыванию
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :return: список словарей с суммами расходов по категориям
+    :rtype: list[dict[str, float]]
+    """
+    utils_logger.debug("Перебираем словари и суммируем расходы по категориям расходов")
+    dict_expenses = {}
+    for dict_ in data:
+        if (
+            not dict_["Категория"] in dict_expenses
+            and dict_["Сумма платежа"] < 0
+            and not dict_["Категория"] in ["Наличные", "Переводы"]
+        ):
+            dict_expenses[dict_["Категория"]] = abs(dict_["Сумма платежа"])
+        elif dict_["Категория"] in dict_expenses and dict_["Сумма платежа"] < 0:
+            dict_expenses[dict_["Категория"]] += abs(dict_["Сумма платежа"])
+
+    utils_logger.debug("Формируем структуру ответа в соответствии с ТЗ")
+    sorted_list = [
+        {"category": category, "amount": round(amount, 2)}
+        for category, amount in sorted(dict_expenses.items(), key=lambda item: item[1], reverse=True)
+    ]
+
+    utils_logger.debug('Проверяем на наличие "остальных" расходов')
+    the_rest_category = sum(list(dict_expenses.values())[7:])
+    result_list = sorted_list[:7]
+    if the_rest_category > 0:
+        result_list.append({"category": "Остальное", "amount": round(the_rest_category, 2)})
+
+    utils_logger.info("Возвращаем список словарей с тратами по категориям")
+    return result_list
+
+
+def transfers_and_cash(data: list[dict[Hashable, Any]]) -> list[dict[str, float]]:
+    """
+    Функция, возвращающая сумму выдачи наличных и переводов
+    :param data: список транзакций
+    :type data: list[dict[Hashable, Any]]
+    :return: список словарей с суммами расходов по категориям
+    :rtype: list[dict[str, float]]
+    """
+    utils_logger.debug('Перебираем словари и суммируем расходы по категориям "Переводы" и "Наличные"')
+    dict_expenses = {}
+    for dict_ in data:
+        if (
+            not dict_["Категория"] in dict_expenses
+            and dict_["Сумма платежа"] < 0
+            and (dict_["Категория"] == "Наличные" or dict_["Категория"] == "Переводы")
+        ):
+            dict_expenses[dict_["Категория"]] = abs(dict_["Сумма платежа"])
+        elif dict_["Категория"] in dict_expenses and dict_["Сумма платежа"] < 0:
+            dict_expenses[dict_["Категория"]] += abs(dict_["Сумма платежа"])
+
+    utils_logger.debug("Формируем структуру ответа в соответствии с ТЗ")
+    sorted_list = [
+        {"category": category, "amount": round(amount, 2)}
+        for category, amount in sorted(dict_expenses.items(), key=lambda item: item[1], reverse=True)
+    ]
+
+    utils_logger.info('Возвращаем список словарей с тратами по категориям "Переводы" и "Наличные"')
+    return sorted_list
+
+
+def total_amount_of_receipts(data: list[dict[Hashable, Any]]) -> float:
+    """
+    Функция, возвращающая сумму поступлений
+    :param data: список операций
+    :type data: list[dict[Hashable, Any]]
+    :return: сумма поступлений
+    :rtype: float
+    """
+    utils_logger.debug("Перебираем операции и суммируем поступления")
+    expenses = 0
+    for dict_ in data:
+        if dict_["Сумма платежа"] > 0:
+            expenses += dict_["Сумма платежа"]
+
+    utils_logger.info(f"Возвращаем сумму поступлений {expenses}")
+    return round(expenses, 2)
+
+
+def main_receipts(data: list[dict[Hashable, Any]]) -> list[dict[str, float]]:
+    """
+    Функция, возвращающая сумму поступлений по категориям по убыванию
+    :param data: list[dict[Hashable, Any]]
+    :return: список словарей с суммами поступлений по категориям
+    :rtype: list[dict[str, float]]
+    """
+    utils_logger.debug("Перебираем словари и суммируем поступления по категориям")
+    dict_expenses = {}
+    for dict_ in data:
+        if not dict_["Категория"] in dict_expenses and dict_["Сумма платежа"] > 0:
+            dict_expenses[dict_["Категория"]] = dict_["Сумма платежа"]
+        elif dict_["Категория"] in dict_expenses and dict_["Сумма платежа"] > 0:
+            dict_expenses[dict_["Категория"]] += dict_["Сумма платежа"]
+
+    utils_logger.debug("Формируем структуру ответа в соответствии с ТЗ")
+    sorted_list = [
+        {"category": category, "amount": round(amount, 2)}
+        for category, amount in sorted(dict_expenses.items(), key=lambda item: item[1], reverse=True)
+    ]
+
+    utils_logger.info("Возвращаем список словарей с поступлениями по категориям")
+    return sorted_list
