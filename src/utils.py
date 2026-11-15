@@ -9,7 +9,7 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+load_dotenv("../.env")
 
 utils_logger = logging.getLogger("Вспомогательные функции")
 
